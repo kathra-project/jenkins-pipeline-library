@@ -1,0 +1,14 @@
+#!/usr/bin/groovy
+node('maven') {
+  def vars
+
+  checkout([$class: 'GitSCM', branches: [[name: '$GIT_BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: PULL_KEY, url: GIT_URL]]])
+  
+  vars = initVariables {
+    IMPL_VERSION = retrieveMavenArtifactVersion()
+  }
+
+  buildAndPushMavenArtifact vars.IMPL_VERSION, true
+
+  buildAndPushDockerImage vars.IMAGE_NAME, vars.IMAGE_ALT_NAME
+}

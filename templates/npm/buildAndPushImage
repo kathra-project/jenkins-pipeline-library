@@ -1,0 +1,27 @@
+#!/usr/bin/groovy
+node(label: 'npm') {
+
+	stage("Cloning repository..."){
+		checkout([
+			$class: 'GitSCM', 
+			branches: [[name: '*/$GIT_BRANCH']], 
+			doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+			userRemoteConfigs: [
+			[credentialsId: PULL_KEY, url: GIT_URL]]])
+	}
+
+	def vars
+	
+	container('npm'){
+		def version = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).toString().trim()
+
+		vars = initVariables {
+			IMPL_VERSION = version
+		}
+
+		buildNpmPackage vars.IMPL_VERSION
+
+	}
+	
+  	buildAndPushDockerImage vars.IMAGE_NAME, vars.IMAGE_ALT_NAME
+}

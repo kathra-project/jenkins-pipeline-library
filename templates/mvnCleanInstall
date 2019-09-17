@@ -1,0 +1,19 @@
+#!/usr/bin/groovy
+node('maven') {
+  def vars
+
+  checkout([$class: 'GitSCM', branches: [[name: '$GIT_BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: PULL_KEY, url: GIT_URL]]])
+  
+  container(name: 'maven') {
+    stage 'Build Release'
+      
+    def m = readMavenPom file: 'pom.xml'
+
+    vars = initVariables {
+      IMPL_VERSION = m.getVersion()
+    }
+     
+    sh 'mvn versions:set -DnewVersion=' + vars.IMPL_VERSION
+    sh 'mvn -Dfabric8.mode=kubernetes clean deploy -U'
+  }
+}

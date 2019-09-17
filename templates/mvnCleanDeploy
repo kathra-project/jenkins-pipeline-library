@@ -1,0 +1,45 @@
+#!/usr/bin/groovy
+node('maven') {
+  def vars
+
+  checkout([$class: 'GitSCM', branches: [[name: '$GIT_BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: PULL_KEY, url: GIT_URL]]])
+  
+  container(name: 'maven') {
+    stage 'Build Release'
+      
+    def m = readMavenPom file: 'pom.xml'
+
+    vars = initVariables {
+      IMPL_VERSION = m.getVersion()
+    }
+     
+    sh 'mvn versions:set -DnewVersion=' + vars.IMPL_VERSION
+    sh 'mvn clean deploy -U'
+    
+    stage('Preparing resources for docker image...') {      
+      sh 'mvn dependency:copy-dependencies'
+    }
+  }
+
+  container('docker') {
+    stage('Creating and deploying docker image...') {      
+      sh "docker build -t ${vars.IMAGE_NAME} ."
+      sh "docker push ${vars.IMAGE_NAME}"
+    }
+  }
+ 
+  container('maven') {
+    stage('Processing deployments resources...') {
+
+      def manifest = getManifest("java") {
+        PROJECT_VARS = vars
+      }
+
+      clusterDeploy {
+        FILE = manifest
+        CLUSTER = "interne"
+        NAMESPACE = vars.ENV_NAME
+      }
+    }
+  }
+}

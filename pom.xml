@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ ~ Copyright 2019 The Kathra Authors.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+ ~
+ ~ Contributors:
+ ~
+ ~    IRT SystemX (https://www.kathra.org/)    
+ ~
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <parent>
+        <groupId>org.kathra</groupId>
+        <artifactId>kathra-misc-parent</artifactId>        
+        <version>0.2.0</version>
+    </parent>
+    
+    <scm>
+        <connection>scm:git:git@gitlab.default.irtsysx.fr:KATHRA/${project.artifactId}</connection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.kathra</groupId>
+    <artifactId>kathra-pipeline-library</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+    
+    <build>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    
+   
+    <url>http://gitlab.com/kathra/factory/jenkins/pipeline-library</url>
+    
+    <licenses>
+        <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+          <name>Jeremy Guillemot</name>
+          <email>jeremy.guillemot@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Antoine Cleuet</name>
+          <email>antoine.cleuet@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Pierre D'Aviau De Ternay</name>
+          <email>pierre.daviaudeternay@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Quentin Semanne</name>
+          <email>quentin.semanne@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Jean-Alexis Lauricella</name>
+          <email>jean-alexis.lauricella@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+        <developer>
+          <name>Julien Boubechtoula</name>
+          <email>julien.boubechtoula@irt-systemx.fr</email>
+          <organization>IRT SystemX</organization>
+          <organizationUrl>https://www.irt-systemx.fr</organizationUrl>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git@gitlab.com:kathra/factory/jenkins/pipeline-library.git</connection>
+        <developerConnection>scm:git:ssh://gitlab.com:kathra/factory/jenkins/pipeline-library.git</developerConnection>
+        <url>https://gitlab.com/kathra/factory/jenkins/pipeline-library/tree/master</url>
+    </scm>
+ 
+ 
+    <description>no description</description>
+ 
+ </project>
+

@@ -1,0 +1,96 @@
+#!/usr/bin/groovy
+
+node(label: 'npm') {
+
+  stage("Cloning repository..."){
+    checkout([
+      $class: 'GitSCM', 
+      branches: [[name: '$GIT_BRANCH']], 
+      doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+      userRemoteConfigs: [
+        [credentialsId: PULL_KEY, url: GIT_URL]
+      ]
+    ])
+  }
+  
+  def version
+  def projectName = JOB_NAME.split('/').last()
+  def imageName
+  def vars
+  
+  container('npm'){
+    
+    def _version = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).toString().trim()
+    println 'Initializing variables'
+    vars = initVariables {
+      IMPL_VERSION = _version
+    }
+    
+    stage('Building application...'){
+      
+      stage('Installing building packages...'){
+        sh('npm i')
+        sh('npm run post-install')
+      }
+      
+      stage('Building application to dist/ ...'){
+        sh('npm run build')
+      }
+
+      stage('Preparing docker files...') {
+        
+        stage("Writing version to sources...") {
+          sh("npm version ${vars.IMPL_VERSION} --no-git-tag-version --allow-same-version")
+        }
+        
+        stage("Removing npm cluter and Installing server dependencies only..."){
+          sh('rm -rf node_modules')
+          sh('npm i --production')
+        }
+      }
+    }
+  }
+
+  container('docker'){
+    println 'Getting docker image name'
+    imageName = ("registry.hub.docker.com" + "/" + ENV_NAME + '/' + projectName).toLowerCase() + ":" + vars.IMAGE_VERSION;
+    
+    stage('Creating and deploying docker image...'){      
+      sh("docker build -t ${imageName} .")
+      sh("docker push ${imageName}")
+    }
+  }
+
+  stage('Processing deployments resources...'){
+    def manifest = getManifest("javascript") {
+      PRODUCT_NAME = "kathra"
+      SERVICE_NAME = projectName
+      IMPL_NAME = projectName
+      DESC = ""
+      IMAGE_NAME = imageName
+      PORT = "8080"
+      RESOURCES_CPU_MIN = "100m"
+      RESOURCES_CPU_MAX = "300m"
+      RESOURCES_MEM_MIN = "200Mi"
+      RESOURCES_MEM_MAX = "500Mi"
+    }
+
+    println manifest;
+    
+    def _jobName = JOB_NAME
+    def gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+    def gitBranch = GIT_BRANCH
+    
+    // Must be executed in a container having cURL
+    container('npm'){
+      clusterDeploy {
+        FILE = manifest
+        JOB_NAME = _jobName
+        COMMIT_ID = gitCommit
+        BRANCH = gitBranch
+        CLUSTER = "interne"
+        NAMESPACE = vars.ENV_NAME
+      }
+    }
+  }
+}

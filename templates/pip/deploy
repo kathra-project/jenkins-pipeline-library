@@ -1,0 +1,39 @@
+#!/usr/bin/groovy
+
+node('pip') {
+  def vars
+  def version
+
+  checkout([$class: 'GitSCM', branches: [[name: '*/$GIT_BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: PULL_KEY, url: GIT_URL]]])
+  
+  (version, setupFile) = retrievePipPackageVersion()
+
+  vars = initVariables {
+    IMPL_VERSION = version
+  }
+
+  // Replace version in setup.py if in feature_branch
+  if(!version.equals(vars.IMPL_VERSION)) {
+    setupFile.replaceAll("VERSION *= *\"(.*)\"",vars.IMPL_VERSION)
+    writeFile file: "setup.py", text: setupFile
+  }
+  
+  buildAndPushPipPackage vars.PIP_REPO
+  buildAndPushDockerImage vars.IMAGE_NAME, vars.IMAGE_ALT_NAME
+
+  container('pip') {
+    stage('Deploying Image to Cluster') {
+
+      def manifest = getManifest("python") {
+        PROJECT_VARS = vars
+      }
+
+      clusterDeploy {
+        FILE = manifest
+        CLUSTER = "interne"
+        NAMESPACE = vars.ENV_NAME
+        DEPLOYMANAGER_URL = vars.DEPLOYMANAGER_URL
+      }
+    }
+  }
+}
