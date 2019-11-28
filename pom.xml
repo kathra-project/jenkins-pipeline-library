@@ -27,7 +27,7 @@
         <groupId>org.kathra</groupId>
         <artifactId>kathra-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../kathra-parent</relativePath>
+        
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
