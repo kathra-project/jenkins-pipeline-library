@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-slim
+FROM openjdk:14-jdk-slim
 
 ARG MAVEN_VERSION=3.5.4
 ARG USER_HOME_DIR="/root"
