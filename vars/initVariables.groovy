@@ -69,6 +69,7 @@ def call(body) {
   def groupName
   def product
   def service
+  def component
   def impl
   
   // Determine variables for kathra-projects
@@ -79,14 +80,15 @@ def call(body) {
     int i=2;
     while (i<tmp.size()) {
       if (tmp[i]=="components") {
-        service = tmp[i+1].toLowerCase();
+        component = tmp[i+1].toLowerCase();
       }
       else if (tmp[i]=="implementations") {
         impl = tmp[i+2].toLowerCase();
       }
       i++;
     }
-      imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + service + "/" + impl + ":"
+    imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + component + "/" + impl + ":"
+    service = impl
   }
 
   // Old-fashioned kathra projects
