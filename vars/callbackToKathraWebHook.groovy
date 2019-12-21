@@ -6,3 +6,4 @@ def call(callbackURL, pipeline, branch) {
         sh "curl ${callbackURL}?pipeline=${pipeline}&branch=${branch}"
     }
 }
+return this;
