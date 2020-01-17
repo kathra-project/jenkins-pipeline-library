@@ -7,7 +7,7 @@ node("docker") {
   def groupName
   groupName = "${env.JOB_NAME}".toLowerCase().replaceAll(/[^0-9a-z]/, "-")
 
-  helmPackageAndPushChart groupName, CATALOG_URL, CATALOG_LOGIN, CATALOG_PASSWORD
+  helmPackageAndPushChart groupName, BINARY_REPOSITORY_URL, BINARY_REPOSITORY_USERNAME, BINARY_REPOSITORY_PASSWORD
 
   callbackToKathraWebHook KATHRA_WEBHOOK_URL, "${env.JOB_NAME}", GIT_BRANCH
 }
