@@ -1,5 +1,5 @@
 #!/usr/bin/groovy
-node("docker") {
+node("helm") {
   def vars
 
   checkout([$class: 'GitSCM', branches: [[name: '$GIT_BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: PULL_KEY, url: GIT_URL]]])
