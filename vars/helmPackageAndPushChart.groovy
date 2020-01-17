@@ -6,10 +6,10 @@ def call(String repositoryName, String repositoryUrl, String username, String pa
 			sh "helm package ."
 		}
 		stage('Configure Helm') {      
-			sh "helm add repo ${repositoryName} ${repositoryUrl}"
+			sh "helm add repo ${repositoryName} ${repositoryUrl} --username ${username} --password"
 		}
         stage('Publish Chart') {      
-			sh "helm --username ${username} --password ${password} . ${repositoryName}"
+			sh "helm push . ${repositoryName}"
 		}
     }
 }
