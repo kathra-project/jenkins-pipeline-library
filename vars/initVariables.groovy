@@ -86,7 +86,7 @@ def call(body) {
       }
       i++;
     }
-      imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + service + "/" + impl + ":"
+      imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + impl + ":"
   }
 
   // Old-fashioned kathra projects

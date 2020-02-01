@@ -8,8 +8,7 @@ def call(String imageName, String registryUrl, String registryLogin, String regi
 		stage('Build image') {      
 			sh "docker build -t ${registryUrl}/${imageName} ."
 		}
-        
-		stage('Build image') {      
+		stage('Push image') {
 			sh "docker push ${registryUrl}/${imageName}"
 		}
     }
