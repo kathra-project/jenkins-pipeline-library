@@ -26,7 +26,7 @@ def call(body) {
     GROUP_NAME: "kathra",
     SERVICE_NAME: "catalogmanager",
     IMPL_NAME:"k8s",
-    IMPL_VERSION: "1.1.0-SNAPSHOT",
+    IMPL_VERSION: "1.2.0-SNAPSHOT",
     API_VERSION: "1",
     DOCKER_URL: "registry.hub.docker.com",
     BRANCH_NAME: "dev",
