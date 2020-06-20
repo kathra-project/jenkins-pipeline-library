@@ -18,6 +18,10 @@ def call(String artifactVersion, boolean includeDependencies = false) {
 		
 		sh mvnDeploy
 
+		stage ('Quality analysis') {
+    		sh 'mvn sonar:sonar'
+		}
+
 		if(includeDependencies) {
 			stage('Preparing resources for docker image...') {      
 				sh 'mvn dependency:copy-dependencies'

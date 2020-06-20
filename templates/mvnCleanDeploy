@@ -15,6 +15,10 @@ node('maven') {
      
     sh 'mvn versions:set -DnewVersion=' + vars.IMPL_VERSION
     sh 'mvn clean deploy -U'
+
+		stage ('Quality analysis') {
+      sh 'mvn sonar:sonar'
+    }
     
     stage('Preparing resources for docker image...') {      
       sh 'mvn dependency:copy-dependencies'
