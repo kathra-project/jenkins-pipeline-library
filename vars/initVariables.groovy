@@ -145,19 +145,13 @@ def call(body) {
   }
  
   vars.ENV_NAME = vars.GROUP_NAME
-
   if(!vars.BRANCH_NAME.equals("master")) {
-    if (vars.BRANCH_NAME.endsWith("-rc")) {
-      vars.ENV_NAME = vars.ENV_NAME + "-" + vars.BRANCH_NAME
-      vars.IMAGE_ALT_NAME = imageRootName + vars.BRANCH_NAME
-    } else if (vars.BRANCH_NAME.equals("dev")) {
       vars.IMAGE_ALT_NAME = imageRootName + "dev"
       vars.ENV_NAME = vars.ENV_NAME + "-dev"
-    } else {
-      vars.ENV_NAME = vars.ENV_NAME + "-" + vars.BRANCH_NAME
-    }
   }
 
+  vars.ENV_NAME = vars.ENV_NAME.toLowerCase().replaceAll("[^0-9a-z-]*","")
+  
   // Set Image name
   vars.IMAGE_NAME = imageRootName + vars.IMAGE_VERSION
   // Temporary fix ?
