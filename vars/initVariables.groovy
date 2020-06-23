@@ -53,7 +53,6 @@ def call(body) {
   // Determine variables for kathra-projects
 
 
-
   if(vars.DOCKER_URL == null || vars.DOCKER_URL.isEmpty()) {
     vars.DOCKER_URL = "${env.DOCKER_URL}";
   }
@@ -70,66 +69,57 @@ def call(body) {
   def product
   def service
   def component
-  def impl
+  def implementation
   
-  // Determine variables for kathra-projects
-  tmp = "${env.JOB_NAME}".split('/')
-  if (tmp[0].toLowerCase() == "kathra-projects") {
-    groupName = tmp[1].toLowerCase()
-    product = groupName
-    int i=2;
-    while (i<tmp.size()) {
-      if (tmp[i]=="components") {
-        component = tmp[i+1].toLowerCase();
-      }
-      else if (tmp[i]=="implementations") {
-        impl = tmp[i+2].toLowerCase();
-      }
-      i++;
+
+  // EXTRA INFO FROM PATH (to be improved with pipeline variables)
+  def pathAsArray = "${env.JOB_NAME}".split('/')
+  print "${env.JOB_NAME}"
+  groupName = pathAsArray[1].toLowerCase()
+  product = groupName
+  int i=0;
+  while (i<pathAsArray.size()) {
+    if (pathAsArray[i]=="components") {
+      component = pathAsArray[i+1].toLowerCase();
     }
-      imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + impl + ":"
+    else if (pathAsArray[i]=="implementations") {
+      implementation = pathAsArray[i+2].toLowerCase();
+    }
+    i++;
   }
 
-  // Old-fashioned kathra projects
-  else {
-    groupName = "${env.JOB_NAME}".split('/')[0].toLowerCase()
-    tmp = "${env.JOB_BASE_NAME}".split('-')
-    product = tmp[0].toLowerCase()
-    imageRootName = (vars.DOCKER_URL + "/" + "${env.JOB_NAME}").toLowerCase() + ":"
-
-    // Group name match product name
-    if(tmp.size() != 3) {
-      //Not kathra compliant, guessing (product-service/impl)
-      service = tmp[tmp.size() -1].toLowerCase()
-      impl = service
-    }
-    else {
-      //Kathra compliant (product-service-impl)
-      service = tmp[1].toLowerCase()
-      impl = tmp[2].toLowerCase()
-    }
+  if (component == null || component.isEmpty()) {
+    throw new Exception("Component's name is null or empty")
   }
 
+  // GROUP DEFINITION
   if(vars.GROUP_NAME == null || vars.GROUP_NAME.isEmpty()) {
     vars.GROUP_NAME = groupName;
   }
 
-  if(!vars.GROUP_NAME.equals(product)) {
-    service=product+'-'+service
+  // PRODUCT DEFINITION
+  vars.PRODUCT_NAME = component
+  if(vars.PRODUCT_NAME == null || vars.PRODUCT_NAME.isEmpty()) {
+    vars.PRODUCT_NAME = component;
   }
-  
-  vars.PRODUCT_NAME = vars.GROUP_NAME
- 
 
-
+  // SERVICE DEFINITION
   if(vars.SERVICE_NAME == null || vars.SERVICE_NAME.isEmpty()) {
-    vars.SERVICE_NAME = service;
+    vars.SERVICE_NAME = implementation;
   }
-
+  if (vars.SERVICE_NAME != null) {
+    vars.SERVICE_NAME = vars.SERVICE_NAME.toLowerCase().replaceAll("[^0-9a-z-]*","")
+  }
+  // IMPLEMENTATION DEFINITION
   if(vars.IMPL_NAME == null || vars.IMPL_NAME.isEmpty()) {
-    vars.IMPL_NAME = impl;
+    vars.IMPL_NAME = implementation;
   }
+  if (vars.IMPL_NAME != null) {
+    vars.IMPL_NAME = vars.IMPL_NAME.toLowerCase().replaceAll("[^0-9a-z-]*","")
+  }
+  imageRootName = vars.DOCKER_URL + "/" + groupName + "/" + implementation + ":"
 
+  // VERSION DEFINITION
   if(vars.IMPL_VERSION == null || vars.IMPL_VERSION.isEmpty()) {
     vars.IMPL_VERSION = "0.0.1-SNAPSHOT";
   }
@@ -140,18 +130,19 @@ def call(body) {
 
   vars.IMPL_VERSION = version.binaryVersion
 
+  // DOCKER IMAGE VERSION
   if(vars.IMAGE_VERSION == null || vars.IMAGE_VERSION.isEmpty()) {
     vars.IMAGE_VERSION = version.dockerVersion  
   }
  
+  // NAMESPACE DEFINITION
   vars.ENV_NAME = vars.GROUP_NAME
   if(!vars.BRANCH_NAME.equals("master")) {
       vars.IMAGE_ALT_NAME = imageRootName + "dev"
       vars.ENV_NAME = vars.ENV_NAME + "-dev"
   }
-
   vars.ENV_NAME = vars.ENV_NAME.toLowerCase().replaceAll("[^0-9a-z-]*","")
-  
+
   // Set Image name
   vars.IMAGE_NAME = imageRootName + vars.IMAGE_VERSION
   // Temporary fix ?
