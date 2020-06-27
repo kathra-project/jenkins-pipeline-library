@@ -17,7 +17,8 @@ def call(body) {
     IMAGE_NAME: "",
     IMAGE_ALT_NAME: "",
     DEPLOYMANAGER_URL: "",
-    PIP_REPO: ""
+    PIP_REPO: "",
+    GIT_COMMIT: ""
   ]
   
   /*
@@ -51,8 +52,6 @@ def call(body) {
   }
   
   // Determine variables for kathra-projects
-
-
   if(vars.DOCKER_URL == null || vars.DOCKER_URL.isEmpty()) {
     vars.DOCKER_URL = "${env.DOCKER_URL}";
   }
@@ -71,6 +70,8 @@ def call(body) {
   def component
   def implementation
   
+
+  vars.GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
 
   // EXTRA INFO FROM PATH (to be improved with pipeline variables)
   def pathAsArray = "${env.JOB_NAME}".split('/')
