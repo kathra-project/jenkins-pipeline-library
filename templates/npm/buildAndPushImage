@@ -4,7 +4,7 @@ node(label: 'npm') {
 	stage("Cloning repository..."){
 		checkout([
 			$class: 'GitSCM', 
-			branches: [[name: '*/$GIT_BRANCH']], 
+			branches: [[name: '$GIT_BRANCH']], 
 			doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
 			userRemoteConfigs: [
 			[credentialsId: PULL_KEY, url: GIT_URL]]])

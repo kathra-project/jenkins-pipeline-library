@@ -1,6 +1,9 @@
 #!/usr/bin/env groovy
 
 def call(String artifactVersion, boolean includeDependencies = false) {
+
+    def GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+
 	container(name: 'maven') {
 		stage 'Enable pgp key if present'
 		def gpgKey = sh(returnStatus:true, script: "[ -f /home/jenkins/gpg/privateKathra.key ]")
@@ -17,6 +20,10 @@ def call(String artifactVersion, boolean includeDependencies = false) {
 		}
 		
 		sh mvnDeploy
+
+		stage ('Quality analysis') {
+    		sh "mvn sonar:sonar -Dsonar.scm.provider=git -Dsonar.scm.revision=${GIT_COMMIT} -Dsonar.links.ci=${env.JOB_URL} -Dsonar.links.scm=${GIT_URL}"
+		}
 
 		if(includeDependencies) {
 			stage('Preparing resources for docker image...') {      
